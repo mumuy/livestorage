@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>实时数据存储liveStorage</title>
+        <style type="text/css">
+            .container{
+                max-width: 640px;
+                margin: 0 auto;
+            }
+            .module{
+                padding: 15px;
+                border: 1px solid #e8e8e8;
+                border-radius: 6px;
+            }
+            .module .hd{
+                margin-bottom: 20px;
+                padding: 10px 0;
+                line-height: 20px;
+                background: #f8f8f8;
+                border-radius: 3px;
+            }
+            .module .hd .title{
+                position: relative;
+                display: inline-block;
+                padding: 0 15px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+            .module .hd .title::after{
+                position: absolute;
+                top: 0;
+                left: 3px;
+                width: 4px;
+                height: 20px;
+                content:'';
+                background: #1690ff;
+                border-radius: 2px;
+            }
+
+            .input-wrapper{
+                display: flex;
+                padding: 4px 0;
+            }
+            .input-title{
+                width: 90px;
+                padding: 0 10px;
+                line-height: 36px;
+                text-align: right;
+            }
+            .input-title{
+                padding: 0 10px;
+                color: #666;
+            }
+            label{
+                display: inline-block;
+                min-width: 48px;
+                margin-right: 15px;
+                line-height: 36px;
+            }
+            label input,label span{
+                vertical-align: middle;
+            }
+            input[type="text"],input[type="number"],input[type="url"]{
+                width: 240px;
+                height: 36px;
+                padding: 7px 12px;
+                border: 1px solid #e8e8e8;
+                border-radius: 4px;
+                line-height: 20px;
+                box-sizing: border-box;
+                outline: none;
+            }
+            input[type="radio"],input[type="checkbox"]{
+                width: 16px;
+                height: 16px;
+            }
+            select{
+                width: 120px;
+                height: 36px;
+                padding: 7px 12px;
+                border: 1px solid #e8e8e8;
+                border-radius: 4px;
+                line-height: 20px;
+                box-sizing: border-box;
+                outline: none;
+            }
+            button{
+                width: 90px;
+                height: 36px;
+                background: #1690ff;
+                border: medium none;
+                border-radius: 4px;
+                box-sizing: border-box;
+                outline: none;
+                color: #fff;
+            }
+            button:hover{
+                background: #007ff2;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="container">
+                <div class="module mod-panel">
+                    <div class="hd"><span class="title">数据绑定测试</span></div>
+                    <div class="bd">
+                        <div class="input-wrapper">
+                            <div class="input-title">姓名</div>
+                            <div class="input-content">
+                                <input type="text" name="name" value=""/>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <div class="input-title">年纪</div>
+                            <div class="input-content">
+                                <input type="number" name="age" value=""/>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <div class="input-title">性别</div>
+                            <div class="input-content">
+                                <label>
+                                    <input type="radio" name="sex" value="0" checked="checked"/>
+                                    <span>女性</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="sex" value="1"/>
+                                    <span>男性</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <div class="input-title">兴趣</div>
+                            <div class="input-content">
+                                <label>
+                                    <input type="checkbox" name="interest" value="swimming"/>
+                                    <span>游泳</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="interest" value="basketball"/>
+                                    <span>篮球</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="interest" value="football"/>
+                                    <span>足球</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="interest" value="tennis"/>
+                                    <span>网球</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="interest" value="running"/>
+                                    <span>跑步</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <div class="input-title">国籍</div>
+                            <div class="input-content">
+                                <select name="country">
+                                    <option value="cn">中国</option>
+                                    <option value="us">美国</option>
+                                    <option value="ru">俄罗斯</option>
+                                    <option value="gb">英国</option>
+                                    <option value="fr">法国</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-wrapper">
+                            <div class="input-title">&nbsp;</div>
+                            <div class="input-content">
+                                <button id="confirm">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="./dist/livestorage.min.js"></script>
+        <script type="module">
+            // 数据测试
+            liveStorage.watchItem('name','Hello World',{
+                storage:'localStorage',
+                mount:'input[name="name"]'
+            });
+            liveStorage.watchItem('age',18,{
+                storage:'localStorage',
+                mount:'input[name="age"]'
+            });
+            liveStorage.watchItem('sex',0,{
+                storage:'localStorage',
+                mount:'input[name="sex"]'
+            });
+            liveStorage.watchItem('interest',['swimming'],{
+                storage:'localStorage',
+                mount:'input[name="interest"]'
+            });
+            liveStorage.watchItem('country','cn',{
+                storage:'localStorage',
+                mount:'select[name="country"]'
+            });
+        </script>
+    </body>
+</html>

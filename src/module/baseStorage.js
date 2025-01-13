@@ -20,7 +20,7 @@ class Record{
     }
     // 数据更新
     update(data,param = {}){
-        let {storage,domain,path,period,secure,encode,mount} = Object.assign({},this.config,_config,param);
+        let {storage,domain,path,period,secure,encode,mount} = Object.assign({},_config,this.config,param);
         let _ = this;
         _.type = isTypeOf(data);
         let temp = ['Object','Array'].includes(this.type)?data:{value:data};
@@ -46,12 +46,14 @@ class Record{
                 path,
                 period,
                 secure,
-                encode
+                encode,
+                mount
             });
         }else{
             Object.assign(_.config,{
                 storage,
-                encode
+                encode,
+                mount
             });
         }
         // 数据同步

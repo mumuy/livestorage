@@ -1,139 +1,63 @@
-# Nodejs安装datex
+# liveStorage 文档说明
+
+【接口文档】[https://passer-by.com/livestorage/](https://passer-by.com/livestorage/)
+
+【效果演示】[https://passer-by.com/livestorage/test.html](https://passer-by.com/livestorage/test.html)
+
+# liveStorage方法说明
+
+## 监听数据 livestorage.watchItem(key,initialValue,config)
+
 ```js
-npm install datex.js
-```
-# 演示网站
-
-【接口文档】[https://passer-by.com/datex/](https://passer-by.com/datex/)
-
-【世界时-中文】[https://passer-by.com/datex/timezone.html](https://passer-by.com/datex/timezone.html)
-
-【世界时-英文】[https://thedate.today/](https://thedate.today/)
-
-# datex方法说明
-
-## getTime() 返回时间戳(毫秒)
-```js
-datex().getTime()
-// => 1670768193313
-```
-
-## getUnix() 返回时间戳(秒)
-```js
-datex().getUnix()
-// => 1670768193
+// 和input进行数据双向绑定，同时同步到本地存储（localStorage）中
+let data = liveStorage.watchItem('username','Michael',{
+    'mount':'input[name="username"]'
+});
+// 改变数据的值，即可实时更新本地存储（localStorage）
+data.value = 'Jafferson';
 ```
 
-## clone() 返回克隆对象
+## 设置数据 setItem(key,value,config)
+
 ```js
-datex().clone()
+// 字符串设置
+liveStorage.setItem('name','Michael');
+// 数字设置
+liveStorage.setItem('age',18);
+// 对象设置
+liveStorage.setItem('user',{
+    'name':'Li Lei',
+    'age':24,
+    'interest':['basketball','football']
+});
+// 时间设置
+liveStorage.setItem('starttime',new Date());
+// 正则设置
+liveStorage.setItem('match',/\d{6}/);
+// 数组设置
+liveStorage.setItem('list',[2,4,6,8,10]);
 ```
 
-## toDate() 返回原生Date对象
+## 获取数据 getItem(key)
+
 ```js
-datex().toDate()
-// => Sun Dec 11 2022 22:20:20 GMT+0800 (中国标准时间)
+let name = liveStorage.getItem('name');
 ```
 
-## toObject() 返回时间字段对象
+## 移除数据 remove(key)
+
 ```js
-datex().toDate()
-// => {
-	year:2022,
-	month:12,
-	day:11,
-	hour:22,
-	minute:23,
-	second: 14,
-	millsecond:612,
-	timestamp:1670768594612,
-	week:0
-}
+livestorage.removeItem('username');
 ```
 
-## toArray() 返回时间字段数值
+## 清空数据 clear();
+
 ```js
-datex().toArray()
-// => [2022,12,11,22,23,14,612]
+liveStorage.clear();
 ```
 
-## toString() 返回字符串
-```js
-datex().toDate()
-// => Sun Dec 11 2022 22:20:20 GMT+0800 (中国标准时间)
-```
+## 获取数据条数 length;
 
-## toISOString() 返回ISO字符串
 ```js
-datex().toDate()
-// => 2023-04-12T07:20:23.363Z
-```
-
-## format(pattern) 返回格式化时间
-```js
-datex(2022,10,1).format('YYYY-MM-DD HH:mm:ss')
-// => 2022-10-01 00:00:00
-
-datex(1671761818503).format('YYYY/MM/DD')
-// => 2022/12/23
-```
-
-## set(name,value) 设置某字段值
-```js
-datex(2022,10,1).set('year',2020).format()
-// => 2020-10-01 00:00:00
-```
-
-## change(name,value) 增减某字段值
-```js
-datex(2022,10,1).change('year',1).format()
-// => 2022-10-01 00:00:00
-```
-
-## startOf(name) 获取某字段起始时
-```js
-datex(2022,10,10).startOf('month').format()
-// => 2022-10-01 00:00:00
-```
-
-## endOf(name) 获取某字段末尾时
-```js
-datex(2022,10,10).endOf('month').format()
-// => 2022-10-31 23:59:59
-```
-
-## get(name) 返回某字段值
-```js
-datex(2022,10,1).get('year')
-// => 2022
-```
-
-## diffWith(dateStr|datex,name) 返回某字段差值
-```js
-datex('1949-10-01').diffWith('2022-12-01','month')
-// => -878
-```
-
-## isBefore(dateStr|datex,name) 是否在某个时间点之前
-```js
-datex('2008-08-08').isBefore('2022-02-02')
-// => true
-```
-
-## isAfter(dateStr|datex,name) 是否在某个时间点之后
-```js
-datex('2008-08-08').isAfter('2022-02-02')
-// => false
-```
-
-## isSame(dateStr|datex,name) 是否和某个时间点相等
-```js
-datex('2008-08-08').isSame('2022-02-02')
-// => false
-```
-
-## isBetween(dateStr|datex,dateStr|datex,name) 是否在两个时间点之间
-```js
-datex('2008-08-08').isBetween('2003-07-13','2022-02-02')
-// => true
+console.log('[当前存储数据条数]',liveStorage.length);
 ```

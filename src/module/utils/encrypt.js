@@ -11,9 +11,11 @@ function transform(value){
 }
 
 export function encode(value){
+    value = value.replace(/"/g,'#').replace(/{/g,'(').replace(/}/g,')');
     return transform(b2a(encodeURI(value)));
 }
 
 export function decode(value){
-    return decodeURI(a2b(transform(value)));
+    let result = decodeURI(a2b(transform(value)));
+    return result.replace(/#/g,'"').replace(/\(/g,'{').replace(/\)/g,'}');
 }

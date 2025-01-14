@@ -38,7 +38,11 @@ function fromDataMap(hash){
     }else if(type=='Boolean'){
         result = value==='true';
     }else if(type=='RegExp'){
-        result = new RegExp(value.substring(1,value.length-1));
+        let match = value.match(/\/(.+)\/(.+?)/);
+        if(match){
+            result = new RegExp(match[1],match[2]);
+        }
+        result = null;
     }else if(type=='Date'){
         result = new Date(value);
     }else if(type=='Symbol'){

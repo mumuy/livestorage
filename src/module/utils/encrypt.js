@@ -11,9 +11,9 @@ function transform(value){
 }
 
 export function encode(value){
-    return transform(b2a(value));
+    return transform(b2a(encodeURI(value)));
 }
 
 export function decode(value){
-    return a2b(transform(value));
+    return decodeURI(a2b(transform(value)));
 }

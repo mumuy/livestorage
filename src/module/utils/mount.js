@@ -69,7 +69,6 @@ export function mountElement(selector,key){
         });
     };
     elements.forEach(function(element){
-        element.addEventListener('input',onChanged);
         element.addEventListener('change',onChanged);
     });
     

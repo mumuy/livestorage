@@ -5,10 +5,11 @@ let operatorMap = {};       // 缓存操作对象
 let stateMap = {};          // 缓存状态数据
 let elementsMap = {};       // 缓存绑定节点
 let taskListMap = {};       // 任务列表映射
+import {isArray} from './type.js';
 
 export function mountElement(selector,key){
-    const nodelist = selector?document.querySelectorAll(selector):[];
-    if(!nodelist.length){
+    const $nodelist = selector?document.querySelectorAll(selector):[];
+    if(!$nodelist.length){
         return null;
     }else if(operatorMap[key]){
         return operatorMap[key];
@@ -33,7 +34,7 @@ export function mountElement(selector,key){
     let operator = operatorMap[key];
     let state = stateMap[key];
     let elements = elementsMap[key];
-    nodelist.forEach(function(element){
+    $nodelist.forEach(function(element){
         if(!elements.includes(element)){
             elements.push(element);
         }
@@ -71,12 +72,15 @@ export function mountElement(selector,key){
     elements.forEach(function(element){
         element.addEventListener('change',onChanged);
     });
-    
+
     // 方法定义
     operator.setValue = function(value){
         elements.forEach(function(element){
             if(state.method=='checked'){
                 if(state.type=='array'){
+                    if(!isArray(value)){  // 兼容单值
+                        value = [value];
+                    }
                     if(value.includes(element.value)){
                         element.checked = true;
                     }else{

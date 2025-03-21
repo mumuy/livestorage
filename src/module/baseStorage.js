@@ -4,6 +4,13 @@ import {isTypeOf,isArray} from './utils/type.js';
 import {mountElement} from './utils/mount.js';
 import unitStorage from './unitStorage.js';
 
+let structuredClone = window.structuredClone;
+if (!structuredClone) {
+    structuredClone = (obj, options) => {
+        return JSON.parse(JSON.stringify(obj));
+    };
+}
+
 // 记录的基础属性
 class Record{
     #TaskList;

@@ -63,7 +63,7 @@ export function mountElement(selector,key){
 
     // 事件绑定
     let taskList = taskListMap[key];
-    let onChanged = function(){
+    const onChanged = function(){
         let value = operator.getValue();
         taskList.forEach(function(task){
             task(value);
@@ -71,6 +71,19 @@ export function mountElement(selector,key){
     };
     elements.forEach(function(element){
         element.addEventListener('change',onChanged);
+        let lastValue = element.value;
+        let lastChecked = element.checked;
+        let doTask = function(){
+            if(lastValue!=element.value){
+                lastValue = element.value;
+                onChanged();
+            }else if(lastChecked!=element.checked){
+                lastChecked = element.checked;
+                onChanged();
+            }
+            requestAnimationFrame(doTask);
+        };
+        requestAnimationFrame(doTask);
     });
 
     // 方法定义

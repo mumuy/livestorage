@@ -180,11 +180,12 @@ export default class baseStorage{
     setItem(key,data,param){
         let _ = this;
         let record = _.#records.find(record=>record.key==key)||null;
+        let config = Object.assign({},_.#config,param);
         if(record){
             unitStorage[record.config['storage']].removeItem(record.key);
-            record.update(data,param);
+            record.update(data,config);
         }else{
-            record = new Record(key,data,param);
+            record = new Record(key,data,config);
             _.#records.push(record);
         }
         unitStorage[record.config['storage']].setItem(record.key,record.toRaw(),record.config);

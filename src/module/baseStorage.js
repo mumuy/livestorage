@@ -170,7 +170,9 @@ export default class baseStorage{
             },
             deleteProperty(target, property){ 
                 // delete target[property];
-                return Reflect.deleteProperty(target, property);
+                Reflect.deleteProperty(target, property);
+                _.setItem(key,record.toRaw(),param);
+                return true;
             }
         });
     }

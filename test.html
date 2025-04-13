@@ -182,25 +182,15 @@
         <script type="text/javascript" src="./dist/livestorage.min.js"></script>
         <script type="text/javascript">
             // 数据测试
-            liveStorage.watchItem('name','Hello World',{
+            liveStorage.watchItem('form',{
+                'name':'Hello World',
+                'age':18,
+                'sex':'0',
+                'interest':['swimming'],
+                'country':'cn'
+            },{
                 storage:'localStorage',
-                mount:'input[name="name"]'
-            });
-            liveStorage.watchItem('age',18,{
-                storage:'localStorage',
-                mount:'input[name="age"]'
-            });
-            liveStorage.watchItem('sex',0,{
-                storage:'localStorage',
-                mount:'input[name="sex"]'
-            });
-            liveStorage.watchItem('interest',['swimming'],{
-                storage:'localStorage',
-                mount:'input[name="interest"]'
-            });
-            liveStorage.watchItem('country','cn',{
-                storage:'localStorage',
-                mount:'select[name="country"]'
+                mount:'.mod-panel'
             });
         </script>
     </body>

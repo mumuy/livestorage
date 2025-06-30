@@ -35,7 +35,7 @@ export default {
         return document.cookie.split(';').map(value=>{
             value = value.trim();
             let index = value.indexOf('=');
-            return [value.substring(0,index),value.substring(index+1)];
+            return [value.slice(0,index),value.slice(index+1)];
         });
     },
     onChange(task){

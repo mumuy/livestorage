@@ -13,16 +13,23 @@ if(typeof cookieStore=='undifined'){
 }
 export default {
     setItem(key,value,param){
-        let {domain,path,period} = param;
-        if(isObject(period)){
-            let time = 0;
-            for(let field in period){
-                time += _peroid[field]||0;
+        let {domain,path,period,expires} = param;
+        let expires_timestamp = [];
+        if(period>0){
+            if(isObject(period)){
+                let time = 0;
+                for(let field in period){
+                    time += _peroid[field]||0;
+                }
+                period = time;
             }
-            period = time;
+            expires_timestamp.push(Date.now()+period);
         }
-        let expires = (new Date(Date.now()+period)).toUTCString();
-        document.cookie = `${key}=${value}; domain=${domain}; path=${path}; expires=${expires}`;
+        if(expires!=null){
+            expires_timestamp.push(expires);
+        }
+        const expires_string = (new Date(Math.min(...expires_timestamp))).toUTCString();
+        document.cookie = `${key}=${value}; domain=${domain}; path=${path}; expires=${expires_string}`;
     },
     getItem(key){
         let map =  Object.fromEntries(this.getItems());

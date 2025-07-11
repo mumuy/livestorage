@@ -146,7 +146,12 @@
                                         <tr>
                                             <td>period</td>
                                             <td>36000000</td>
-                                            <td>有效期<span class="tip">仅storage为'cookie'时有效</span></td>
+                                            <td>有效期<span class="tip">仅storage为'cookie'时有效，和expires同时存在时最近时间过期</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>expires</td>
+                                            <td>null</td>
+                                            <td>过期时间<span class="tip">仅storage为'cookie'时有效，和period同时存在时最近时间过期</span></td>
                                         </tr>
                                         <tr>
                                             <td>secure</td>

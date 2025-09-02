@@ -3,7 +3,7 @@ import { isObject } from "../utils/type.js";
 
 // cookie
 let taskList = [];
-if(typeof cookieStore=='undifined'){
+if(typeof cookieStore!='undefined'){
     cookieStore.addEventListener('change',function(event){
         let change = event.changed[0];
         taskList.forEach(function(task){

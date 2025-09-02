@@ -15,7 +15,7 @@ if(typeof cookieStore!='undefined'){
         if(event.deleted.length){
             event.deleted.forEach(function(item){
                 taskList.forEach(function(task){
-                    task(item.name,null);
+                    task(item.name,undefined);
                 });
             });
         }

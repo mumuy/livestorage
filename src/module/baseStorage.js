@@ -123,7 +123,11 @@ export default class baseStorage{
             unitStorage[name].onChange(function(key,data){
                 let record = _.#records.find(record=>record.key==key&&record.config.storage==name);
                 if(record){
-                    record.update(data);
+                    if(typeof data != undefined){
+                        record.update(data);
+                    }else{
+                        _.removeItem(record.key);
+                    }
                 }                
             });
         };

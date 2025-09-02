@@ -106,8 +106,17 @@
                         <h1>响应式数据本地存储<span class="tag">开源算法</span></h1>
                         <p>监听变量变化，实时同步数据到本地存储中，实现数据持久化</p>
                         <div class="buttons">
-                            <a class="btn btn-green" href="/livestorage/test.html" target="_blank">
+                            <a class="btn btn-blue" href="/livestorage/test.html" target="_blank">
+                                <img src="./static/image/icon-test.png" width="24" height="24">
                                 <span>数据测试</span>
+                            </a>
+                            <a class="btn btn-green" href="/anynumber/" target="_blank">
+                                <img src="./static/image/icon-number.png" width="24" height="24">
+                                <span>大数浮点数计算</span>
+                            </a>
+                            <a class="btn btn-orange" href="/ajax/" target="_blank">
+                                <img src="./static/image/icon-ajax.png" width="24" height="24">
+                                <span>异步请求库</span>
                             </a>
                         </div>
                     </div>
@@ -115,72 +124,75 @@
                         <div id="setConfig" class="box">
                             <div class="c-hd">
                                 <p class="title">设置默认配置</p>
-                                <p class="subtitle">livestorage.setConfig(config)</p>
+                                <p class="subtitle">setConfig(config)</p>
                             </div>
                             <div class="c-bd">
-                                <table>
-                                    <caption>配置参数说明</caption>
-                                    <thead>
-                                        <tr>
-                                            <th>参数</th>
-                                            <th>示例</th>
-                                            <th>描述</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>storage</td>
-                                            <td>'localStorage'</td>
-                                            <td>数据存储方式，参考值：'localStorage','sessionStorage','cookie'</td>
-                                        </tr>
-                                        <tr>
-                                            <td>domain</td>
-                                            <td>''</td>
-                                            <td>域名<span class="tip">仅storage为'cookie'时有效</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>path</td>
-                                            <td>'/'</td>
-                                            <td>路径<span class="tip">仅storage为'cookie'时有效</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>period</td>
-                                            <td>36000000</td>
-                                            <td>有效期<span class="tip">仅storage为'cookie'时有效，和expires同时存在时最近时间过期</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>expires</td>
-                                            <td>null</td>
-                                            <td>过期时间<span class="tip">仅storage为'cookie'时有效，和period同时存在时最近时间过期</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>secure</td>
-                                            <td>false</td>
-                                            <td>安全传输<span class="tip">仅storage为'cookie'时有效</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>encode</td>
-                                            <td>true</td>
-                                            <td>是否加密存储</td>
-                                        </tr>
-                                        <tr>
-                                            <td>mount</td>
-                                            <td>''</td>
-                                            <td>通过选择器绑定节点</td>
-                                        </tr>
-                                        <tr>
-                                            <td>onChanged</td>
-                                            <td>function(){}</td>
-                                            <td>数据变动时触发事件处理</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="table-inner">
+                                    <table>
+                                        <caption>配置参数说明</caption>
+                                        <thead>
+                                            <tr>
+                                                <th>参数</th>
+                                                <th>示例</th>
+                                                <th>描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>storage</td>
+                                                <td>'localStorage'</td>
+                                                <td>数据存储方式，参考值：'localStorage','sessionStorage','cookie'</td>
+                                            </tr>
+                                            <tr>
+                                                <td>domain</td>
+                                                <td>''</td>
+                                                <td>域名<span class="tip">仅storage为'cookie'时有效</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>path</td>
+                                                <td>'/'</td>
+                                                <td>路径<span class="tip">仅storage为'cookie'时有效</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>period</td>
+                                                <td>36000000</td>
+                                                <td>有效期<span class="tip">仅storage为'cookie'时有效，和expires同时存在时最近时间过期</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>expires</td>
+                                                <td>null</td>
+                                                <td>过期时间<span class="tip">仅storage为'cookie'时有效，和period同时存在时最近时间过期</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>secure</td>
+                                                <td>false</td>
+                                                <td>安全传输<span class="tip">仅storage为'cookie'时有效</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>encode</td>
+                                                <td>true</td>
+                                                <td>是否加密存储</td>
+                                            </tr>
+                                            <tr>
+                                                <td>mount</td>
+                                                <td>''</td>
+                                                <td>通过选择器绑定节点</td>
+                                            </tr>
+                                            <tr>
+                                                <td>onChanged</td>
+                                                <td>function(){}</td>
+                                                <td>数据变动时触发事件处理</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
                             </div>
                         </div>
                         <div id="watchItem" class="box">
                             <div class="c-hd">
                                 <p class="title">监听数据</p>
-                                <p class="subtitle">livestorage.watchItem(key,initialValue,config)</p>
+                                <p class="subtitle">watchItem(key,initialValue,config)</p>
                             </div>
                             <div class="c-bd">
                                 <h4>对直接量进行设置</h4>

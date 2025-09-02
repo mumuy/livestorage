@@ -5,10 +5,20 @@ import { isObject } from "../utils/type.js";
 let taskList = [];
 if(typeof cookieStore!='undefined'){
     cookieStore.addEventListener('change',function(event){
-        let change = event.changed[0];
-        taskList.forEach(function(task){
-            task(change.name,change.value);
-        });
+        if(event.changed.length){
+            event.changed.forEach(function(item){
+                taskList.forEach(function(task){
+                    task(item.name,item.value);
+                });
+            });
+        }
+        if(event.deleted.length){
+            event.deleted.forEach(function(item){
+                taskList.forEach(function(task){
+                    task(item.name,null);
+                });
+            });
+        }
     });
 }
 export default {

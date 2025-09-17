@@ -22,7 +22,7 @@ class Record{
         _.config = {};
         _.#TaskList = [];
         _.trigger = null;
-        _.triggerData('new',data,param);
+        _.triggerData('value',data,param);
     }
     // 数据更新
     triggerData(trigger,data,param){
@@ -45,11 +45,6 @@ class Record{
                 _.data[field] = temp[field];
             }
         }
-        if(trigger!='new'){
-            _.#TaskList.forEach(function(task){
-                task(trigger,_.toRaw());
-            });
-        }
         let {storage,domain,path,period,expires,secure,encode,mount} = Object.assign({},_config,this.config,param);
         if(storage=='cookie'){
             Object.assign(_.config,{
@@ -67,6 +62,11 @@ class Record{
                 storage,
                 encode,
                 mount
+            });
+        }
+        if(trigger!='new'){
+            _.#TaskList.forEach(function(task){
+                task(trigger,_.toRaw());
             });
         }
     }
@@ -152,7 +152,7 @@ export default class baseStorage{
         let {mount} = record.config;
         let mounter = mountElement(mount,_.key);
         if(mounter){
-            mounter.setValue(data);
+            mounter.setValue(record.toRaw());
             mounter.onChanged(function(value){
                 record.triggerData('element',value);
             });
@@ -161,6 +161,9 @@ export default class baseStorage{
         record.onChanged(function(trigger,newData){
             if(trigger!=='new'&&trigger!=='value'){
                 _.setItem(key,newData,param);
+                if(mounter){
+                    mounter.setValue(newData);
+                }
                 if(param.onChanged){
                     param.onChanged(newData);
                 }
@@ -196,7 +199,9 @@ export default class baseStorage{
             if(config.storage!=record.config.storage){
                 unitStorage[record.config['storage']].removeItem(record.key);
             }
-            record.triggerData('value',data,config);
+            if(record.trigger!='value'){
+                record.triggerData('value',data,config);
+            }
         }else{
             record = new Record(key,data,config);
             _.#records.push(record);

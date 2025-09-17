@@ -20,7 +20,7 @@ export default {
     getItems(){
         return Object.entries(localStorage);
     },
-    onChange(task){
+    onChanged(task){
         taskList.push(task);
     }
 };

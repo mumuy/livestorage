@@ -55,7 +55,7 @@ export default {
             return [value.slice(0,index),value.slice(index+1)];
         });
     },
-    onChange(task){
+    onChanged(task){
         taskList.push(task);
     }
 };

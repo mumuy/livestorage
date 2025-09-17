@@ -14,7 +14,6 @@ if (!structuredClone) {
 // 记录的基础属性
 class Record{
     #TaskList;
-    #Hander;
     constructor(key,data,param = {}){
         let _ = this;
         _.key = key;
@@ -22,16 +21,16 @@ class Record{
         _.data = {};
         _.config = {};
         _.#TaskList = [];
-        _.#Hander = false;
-        _.update(data,param);
+        _.trigger = null;
+        _.triggerData('new',data,param);
     }
     // 数据更新
-    update(data,param = {}){
-        let {storage,domain,path,period,expires,secure,encode,mount} = Object.assign({},_config,this.config,param);
+    triggerData(trigger,data,param){
         let _ = this;
+        _.trigger = trigger;
         _.type = isTypeOf(data);
+        // 修改数据
         let temp = ['Object','Array'].includes(this.type)?data:{value:data};
-        // 不改变句柄的情况下修改数据
         if(_.type=='Array'){
             if(!isArray(_.data)){
                 _.data = [];
@@ -46,6 +45,12 @@ class Record{
                 _.data[field] = temp[field];
             }
         }
+        if(trigger!='new'){
+            _.#TaskList.forEach(function(task){
+                task(trigger,_.toRaw());
+            });
+        }
+        let {storage,domain,path,period,expires,secure,encode,mount} = Object.assign({},_config,this.config,param);
         if(storage=='cookie'){
             Object.assign(_.config,{
                 storage,
@@ -63,19 +68,6 @@ class Record{
                 encode,
                 mount
             });
-        }
-        // 数据同步
-        let mounter = mountElement(mount,_.key);
-        if(mounter){
-            mounter.setValue(data);
-            if(!_.#Hander){
-                _.#Hander = true;
-                mounter.onChanged(function(value){
-                    _.#TaskList.forEach(function(task){
-                        task(value);
-                    });
-                });
-            }
         }
     }
     // 事件队列
@@ -120,15 +112,15 @@ export default class baseStorage{
         });
         // 其他页面变化时，实时更新
         for(let name in unitStorage){
-            unitStorage[name].onChange(function(key,data){
+            unitStorage[name].onChanged(function(key,data){
                 let record = _.#records.find(record=>record.key==key&&record.config.storage==name);
                 if(record){
                     if(typeof data != undefined){
-                        record.update(data);
+                        record.triggerData('storage',data);
                     }else{
                         _.removeItem(record.key);
                     }
-                }                
+                }
             });
         };
         // 数据映射
@@ -154,12 +146,24 @@ export default class baseStorage{
         if(!record){
             record = _.setItem(key,data,param);
         }else{
-            record.update(record.toRaw(),param);
+            record.triggerData('value',record.toRaw(),param);
         }
-        record.onChanged(function(newData){
-            _.setItem(key,newData,param);
-            if(param.onChanged){
-                param.onChanged(newData);
+        // 事件绑定
+        let {mount} = record.config;
+        let mounter = mountElement(mount,_.key);
+        if(mounter){
+            mounter.setValue(data);
+            mounter.onChanged(function(value){
+                record.triggerData('element',value);
+            });
+        }
+        // 事件处理
+        record.onChanged(function(trigger,newData){
+            if(trigger!=='new'&&trigger!=='value'){
+                _.setItem(key,newData,param);
+                if(param.onChanged){
+                    param.onChanged(newData);
+                }
             }
         });
         return new Proxy(record.data,{
@@ -189,8 +193,10 @@ export default class baseStorage{
         let record = _.#records.find(record=>record.key==key)||null;
         let config = Object.assign({},_.#config,param);
         if(record){
-            unitStorage[record.config['storage']].removeItem(record.key);
-            record.update(data,config);
+            if(config.storage!=record.config.storage){
+                unitStorage[record.config['storage']].removeItem(record.key);
+            }
+            record.triggerData('value',data,config);
         }else{
             record = new Record(key,data,config);
             _.#records.push(record);

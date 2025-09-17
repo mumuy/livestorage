@@ -11,7 +11,9 @@ import { stringify,parse } from './utils/format.js';
 import { encode,decode } from './utils/encrypt.js';
 
 const prefix = '@_';  // 特殊标识，防止格式不兼容
-let unitStorage = {};
+
+const unitStorage = {};
+const keyCatch = {};
 [
     ['cookie',_cookie],
     ['localStorage',_localStorage],
@@ -23,10 +25,14 @@ let unitStorage = {};
             if(config.encode){
                 dataStr = encode(dataStr);
             }
-            storage.setItem(prefix+key,dataStr,config);
+            if(!keyCatch[key]||keyCatch[key]!=dataStr){
+                keyCatch[key] = dataStr;
+                storage.setItem(prefix+key,dataStr,config);
+            }
         },
         getItem(key){
             let dataStr = storage.getItem(prefix+key);
+            keyCatch[key] = dataStr;
             if(dataStr){
                 if(dataStr.indexOf('{"V":')==-1){
                     dataStr = decode(dataStr);
@@ -45,9 +51,9 @@ let unitStorage = {};
                 return [k,_.getItem(k)];
             });
         },
-        onChange(task){
+        onChanged(task){
             let _ = this;
-            storage.onChange(function(key){
+            storage.onChanged(function(key){
                 if(key.includes(prefix)){
                     let k = key.replace(prefix,'');
                     task(k,_.getItem(k));

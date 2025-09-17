@@ -20,7 +20,7 @@ export default {
     getItems(){
         return Object.entries(sessionStorage);
     },
-    onChange(task){
+    onChanged(task){
         taskList.push(task);
     }
 };

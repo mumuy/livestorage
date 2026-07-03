@@ -2,6 +2,7 @@ import _config from './runtime/config.js';
 import _peroid from './runtime/period.js';
 import {isTypeOf,isArray} from './utils/type.js';
 import {mountElement} from './utils/mount.js';
+import Record from './class/record.js';
 import unitStorage from './unitStorage.js';
 
 let structuredClone = window.structuredClone;
@@ -10,79 +11,6 @@ if (!structuredClone) {
         return JSON.parse(JSON.stringify(obj));
     };
 }
-
-// 记录的基础属性
-class Record{
-    #TaskList;
-    constructor(key,data,param = {}){
-        let _ = this;
-        _.key = key;
-        _.type = isTypeOf(data);
-        _.data = {};
-        _.config = {};
-        _.#TaskList = [];
-        _.trigger = null;
-        _.triggerData('value',data,param);
-    }
-    // 数据更新
-    triggerData(trigger,data,param){
-        let _ = this;
-        _.trigger = trigger;
-        _.type = isTypeOf(data);
-        // 修改数据
-        let temp = ['Object','Array'].includes(this.type)?data:{value:data};
-        if(_.type=='Array'){
-            if(!isArray(_.data)){
-                _.data = [];
-            }
-            _.data.length = 0;
-            temp.forEach(value=>_.data.push(value));
-        }else{
-            for(let field in _.data){
-                delete _.data[field];
-            }
-            for(let field in temp){
-                _.data[field] = temp[field];
-            }
-        }
-        let {storage,domain,path,period,expires,secure,encode,mount} = Object.assign({},_config,this.config,param);
-        if(storage=='cookie'){
-            Object.assign(_.config,{
-                storage,
-                domain,
-                path,
-                period,
-                expires,
-                secure,
-                encode,
-                mount
-            });
-        }else{
-            Object.assign(_.config,{
-                storage,
-                encode,
-                mount
-            });
-        }
-        if(trigger!='new'){
-            _.#TaskList.forEach(function(task){
-                task(trigger,_.toRaw());
-            });
-        }
-    }
-    // 事件队列
-    onChanged(task){
-        this.#TaskList.push(task);
-    }
-    // 获取原始数据
-    toRaw(){
-        if(['Object','Array'].includes(this.type)){
-            return structuredClone(this.data);
-        }else{
-            return this.data.value;
-        }
-    }
-};
 
 export default class baseStorage{
     #config;
@@ -116,7 +44,7 @@ export default class baseStorage{
                 let record = _.#records.find(record=>record.key==key&&record.config.storage==name);
                 if(record){
                     if(typeof data != undefined){
-                        record.triggerData('storage',data);
+                        record.emit('change',data);
                     }else{
                         _.removeItem(record.key);
                     }
@@ -146,27 +74,25 @@ export default class baseStorage{
         if(!record){
             record = _.setItem(key,data,param);
         }else{
-            record.triggerData('value',record.toRaw(),param);
+            record.emit('change',record.get(),param);
         }
-        // 事件绑定
+        // 表单事件绑定
         let {mount} = record.config;
         let mounter = mountElement(mount,_.key);
         if(mounter){
-            mounter.setValue(record.toRaw());
+            mounter.setValue(record.get());
             mounter.onChanged(function(value){
-                record.triggerData('element',value);
+                record.emit('change',value);
             });
         }
         // 事件处理
-        record.onChanged(function(trigger,newData){
-            if(trigger!=='new'&&trigger!=='value'){
-                _.setItem(key,newData,param);
-                if(mounter){
-                    mounter.setValue(newData);
-                }
-                if(param.onChanged){
-                    param.onChanged(newData);
-                }
+        record.on('change',function(newData){
+            if(mounter){
+                mounter.setValue(newData);
+            }
+            _.setItem(key,newData,param);
+            if(param.onChanged){
+                param.onChanged(newData);
             }
         });
         return new Proxy(record.data,{
@@ -177,13 +103,13 @@ export default class baseStorage{
             set(target, property, value, receiver){
                 // target[property] = value;
                 Reflect.set(target, property, value, receiver);
-                _.setItem(key,record.toRaw(),param);
+                record.emit('change',target,param);
                 return true;
             },
             deleteProperty(target, property){ 
                 // delete target[property];
                 Reflect.deleteProperty(target, property);
-                _.setItem(key,record.toRaw(),param);
+                record.emit('change',target,param);
                 return true;
             }
         });
@@ -199,23 +125,20 @@ export default class baseStorage{
             if(config.storage!=record.config.storage){
                 unitStorage[record.config['storage']].removeItem(record.key);
             }
-            if(record.trigger!='value'){
-                record.triggerData('value',data,config);
-            }
         }else{
             record = new Record(key,data,config);
             _.#records.push(record);
         }
-        unitStorage[record.config['storage']].setItem(record.key,record.toRaw(),record.config);
+        unitStorage[record.config['storage']].setItem(record.key,record.get(),record.config);
         // 附属效果
-        _[key] = record.toRaw();
+        _[key] = record.get();
         return record;
     }
     getItem(key){
         let _ = this;
         let record = _.#records.find(record=>record.key==key)||null;
         if(record){
-            return record.toRaw();
+            return record.get();
         }
         return null;
     }

@@ -1,34 +1,22 @@
 import _config from './runtime/config.js';
 import _peroid from './runtime/period.js';
+import structuredClone from './runtime/structuredClone.js';
 import {isTypeOf,isArray} from './utils/type.js';
 import {mountElement} from './utils/mount.js';
 import Record from './class/record.js';
 import unitStorage from './unitStorage.js';
 
-let structuredClone = window.structuredClone;
-if (!structuredClone) {
-    structuredClone = (obj, options) => {
-        return JSON.parse(JSON.stringify(obj));
-    };
-}
-
 export default class baseStorage{
-    #config;
-    #records;
+    #config = Object.assign({},_config);
+    #records = [];
     [Symbol.toStringTag] = 'baseStorage';
     constructor(){
         let _ = this;
-        _.#config = Object.assign({},_config);
-        // 读取记录
-        _.#records = [];
-        for(let name in unitStorage){
-            let records = unitStorage[name].getItems().map(([key,data])=>{
-                return new Record(key,data,{
-                    storage:name
-                });
+        _.#records = unitStorage.getItems().map(([key,data])=>{
+            return new Record(key,data,{
+                storage:name
             });
-            _.#records = _.#records.concat(records);
-        }
+        });
         // 获取存储数量
         Object.defineProperty(_,'length', {
             set: function(){
@@ -39,18 +27,16 @@ export default class baseStorage{
             }
         });
         // 其他页面变化时，实时更新
-        for(let name in unitStorage){
-            unitStorage[name].onChanged(function(key,data){
-                let record = _.#records.find(record=>record.key==key&&record.config.storage==name);
-                if(record){
-                    if(typeof data != undefined){
-                        record.emit('change',data);
-                    }else{
-                        _.removeItem(record.key);
-                    }
+        unitStorage.onChanged(function(key,data){
+            let record = _.#records.find(record=>record.key==key&&record.config.storage==name);
+            if(record){
+                if(typeof data != undefined){
+                    record.emit('change',data);
+                }else{
+                    _.removeItem(record.key);
                 }
-            });
-        };
+            }
+        });
         // 数据映射
         _.#records.forEach(function(record){
             _[record.key] = _.getItem(record.key);
@@ -123,13 +109,13 @@ export default class baseStorage{
         let config = Object.assign({},_.#config,param);
         if(record){
             if(config.storage!=record.config.storage){
-                unitStorage[record.config['storage']].removeItem(record.key);
+                unitStorage.removeItem(record.key);
             }
         }else{
             record = new Record(key,data,config);
             _.#records.push(record);
         }
-        unitStorage[record.config['storage']].setItem(record.key,record.get(),record.config);
+        unitStorage.setItem(record.key,record.get(),record.config);
         // 附属效果
         _[key] = record.get();
         return record;
@@ -146,7 +132,7 @@ export default class baseStorage{
         let _ = this;
         let record = _.#records.find(record=>record.key==key)||null;
         if(record){
-            unitStorage[record.config['storage']].removeItem(record.key);
+            unitStorage.removeItem(record.key);
         }
         let index = _.#records.map(record=>record.key).indexOf(key);
         if(index>-1){
@@ -156,8 +142,8 @@ export default class baseStorage{
     }
     clear(){
         let _ = this;
-        this.#records.forEach(record=>{
-            unitStorage[record.config['storage']].removeItem(record.key);
+        _.#records.forEach(record=>{
+            unitStorage.removeItem(record.key);
             delete _[record.key];
         });
         _.#records = [];

@@ -1,5 +1,5 @@
 /*
-    各储存器适配器
+    统一各种适配器
     storage  - 存储器类型
     key      - 存储字段键名
     data     - 存储数据序列化
@@ -13,14 +13,15 @@ import { encode,decode } from './utils/encrypt.js';
 
 const prefix = '@_';  // 特殊标识，防止格式不兼容
 
-const unitStorage = {};
+// 映射所有存储器
+const storageMap = {};
 const keyCatch = {};
 [
     ['cookie',_cookie],
     ['localStorage',_localStorage],
     ['sessionStorage',_sessionStorage]
 ].forEach(([name,storage])=>{
-    unitStorage[name] = {
+    storageMap[name] = {
         setItem(key,data,config){
             let dataStr = stringify(data);
             if(config.encode){
@@ -63,4 +64,32 @@ const keyCatch = {};
         }
     };
 });
-export default unitStorage;
+
+// 统一操作所有存储器
+export default {
+    setItem:function(key,data,config){
+        storageMap[config.storage].setItem(key,data,config);
+    },
+    getItem:function(key){
+        for(let storage of Object.values(storageMap)){
+            const item = storage.getItem();
+            if(item){
+                return item;
+            }
+        }
+        return null;
+    },
+    removeItem(key){
+        for(let storage of Object.values(storageMap)){
+            storage.removeItem(key);
+        }
+    },
+    getItems:function(){
+        return Object.values(storageMap).map(storage=>storage.getItems()).flat();
+    },
+    onChanged(task){
+        for(let storage of Object.values(storageMap)){
+            storage.onChanged(task);
+        }
+    }
+};

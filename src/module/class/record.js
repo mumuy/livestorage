@@ -70,7 +70,6 @@ export default class Record{
     }
     // 发布事件
     emit(eventName,...args){
-        console.log('[emit]',eventName,...args);
         const _ = this;
         _.set(...args);
         if (_.#events[eventName]) {

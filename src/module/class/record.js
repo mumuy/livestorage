@@ -69,9 +69,9 @@ export default class Record{
         this.#events[eventName].push(callback);
     }
     // 发布事件
-    emit(eventName,...args){
+    emit(eventName,data,param){
         const _ = this;
-        _.set(...args);
+        _.set(Object.assign({},_.data,data),param);
         if (_.#events[eventName]) {
             _.#events[eventName].forEach(callback => {
                 callback(_.get());
